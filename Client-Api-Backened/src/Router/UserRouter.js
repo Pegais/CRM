@@ -1,5 +1,4 @@
 const express = require("express");
-const { status } = require("express/lib/response");
 const LoginRouter = express.Router();
 
 // requiring the insert query from user/modal/user.modal
