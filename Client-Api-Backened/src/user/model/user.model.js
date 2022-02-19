@@ -11,6 +11,33 @@ const insert = (userObj) => {
     })
 }
 
+// getting userEmail from Database;
+
+const getUserByEmail = (email) => {
+    return new Promise((resolve, reject) => {
+        try {
+            if (!email) {
+                return false;
+            }
+            UserSchema.findOne({ email }, (error, data) => {
+                if (error) {
+                    reject(error)
+                }
+                else {
+                    resolve(data)
+                }
+            })
+            
+        } catch (error) {
+            console.log(error)
+            
+        }
+        
+        
+    })
+}
+
 module.exports = {
     insert,
+    getUserByEmail 
 };
