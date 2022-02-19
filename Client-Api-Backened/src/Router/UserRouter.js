@@ -1,5 +1,6 @@
 const express = require("express");
 const LoginRouter = express.Router();
+const { createAccessJwt, createRefreshJwt}=require('../utils/jwt')
 
 
 // requiring the insert query from user/modal/user.modal
@@ -13,7 +14,7 @@ LoginRouter.all("/", (req, res, next) => {
 })
 
 // import hassedpasswordfunc
-const hassedPassFunc = require('../utils/BrcyptingPassword')
+const {hassedPassFunc} = require('../utils/BrcyptingPassword')
 
 // create new user coming to webPage;
 LoginRouter.get('/', async (req, res) => {
@@ -54,10 +55,16 @@ LoginRouter.post('/login', async (req, res) => {
         console.log(passwordFromDatabase, email);
         if (user && user.password) {
             const result = await ComparePassword(password, passwordFromDatabase)
+            if (result) {
+                const accessToken = await createAccessJwt(user.email);
+                const refreshToken = await createRefreshJwt(user.email);
+                res.json({status:'success',message:'login succesfully',accessToken,refreshToken})
+            }
             
             console.log(result);
         } else {
             console.log("User not Found or User password invalid");
+            res.json({status:'error',message:'User not Found or User password invalid'})
         }
 
     } catch (error) {
