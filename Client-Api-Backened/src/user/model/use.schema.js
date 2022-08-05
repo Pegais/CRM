@@ -2,10 +2,10 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+// const ObjectId = Schema.ObjectId;
 
 const UserSchema = new Schema({
-    id :ObjectId,
+    // ObjectId,
     name: {
         type: String,
         maxlength: 40,
@@ -30,11 +30,22 @@ const UserSchema = new Schema({
         min:8,
         maxlength: 200,
         required: true
+    },
+    refreshJWT: {
+        token: {
+            type: String,
+            maxlength: 500,
+            default:''
+        },
+        addedAt: {
+            type: Date,
+            required: true,
+            default:Date.now()
+        }
     }
 
 });
 // exporting by making databse model table and passing the schema as second argument;
-
 module.exports = {
     UserSchema:mongoose.model('User',UserSchema)
 }

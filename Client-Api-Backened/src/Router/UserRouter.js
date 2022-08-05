@@ -31,7 +31,7 @@ LoginRouter.get('/', async (req, res) => {
     } catch (error) {
         console.log(error);
         res.json({
-            message: 'error in inserting data', hasedPassword
+            message: 'error in inserting data'
         })
 
     }
@@ -53,11 +53,16 @@ LoginRouter.post('/login', async (req, res) => {
         console.log("user from database is:", user);
         const passwordFromDatabase = user && user._id ? user.password : null;
         console.log(passwordFromDatabase, email);
+
+        // if user and user's passsword exists than comparePassword using bcrypt
         if (user && user.password) {
             const result = await ComparePassword(password, passwordFromDatabase)
             if (result) {
-                const accessToken = await createAccessJwt(user.email);
-                const refreshToken = await createRefreshJwt(user.email);
+                
+                // making two tokens with jwt 
+                const accessToken = await createAccessJwt(user.email,`${user._id}`);
+                
+                const refreshToken = await createRefreshJwt(user.email,`${user._id}`);
                 res.json({status:'success',message:'login succesfully',accessToken,refreshToken})
             }
             
