@@ -10,10 +10,10 @@ This is CrmTicket Backened API.
 Routers Used----LoginRouter  and TicketRouter
 <!-- LoginRouter Api ('/auth/user)
           |Routers               |reuqet-type   |isPrivate  |description
-    1.     | './auth/user/login'  |    POST       |     NO   |       verify user authentication and return JWT
+    1.     | './auth/login'  |    POST       |     NO   |       verify user authentication and return JWT
     2.     | './auth/user/request-reset-password '|Post  | NO | verify email and pin to reset the passsword
     3.     |  './auth/user/reset-password'  | PUT |NO | replace with new password
-    4.     | './auth/user/{id}'   | GET  | YES  |  get user info
+    4.     | './auth/user/   | GET  | YES  |  get user info
 
 
 

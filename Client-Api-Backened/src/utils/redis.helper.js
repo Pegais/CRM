@@ -15,18 +15,13 @@ const setJwt = async (key, value) => {
 
 
 }
-const getJwt = (key) => {
-    return new Promise((resolve, reject) => {
-        try {
-            client.set('key', (err, res) => {
-                if (err) reject(err);
-                resolve(res)
-            }) 
-        } catch (error) {
-            reject(error)
-        }
-
-    });
+const getJwt = async(key) => {
+   try {
+       const value = await client.get(key);
+       return value
+   } catch (error) {
+    console.log(error);
+   }
 }
 
 module.exports = {

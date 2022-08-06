@@ -2,22 +2,33 @@ const express = require("express");
 const LoginRouter = express.Router();
 const { createAccessJwt, createRefreshJwt}=require('../utils/jwt')
 
-
+const {userAuthorization} =require("../middleware/authorization.middleware")
 // requiring the insert query from user/modal/user.modal
-const { insert, getUserByEmail } = require('../user/model/user.model')
+const { insert, getUserByEmail,getUserByID } = require('../user/model/user.model')
 
 LoginRouter.all("/", (req, res, next) => {
-    // res.json({
-    //     message:"return user router"
-    // })
+    res.json({
+        message:"return user router"
+    })
     next();
 })
-
+// Get user profile router with authorization access token
+LoginRouter.get("/user",userAuthorization,async (req, res) => {
+    // suppose this data coming from client form
+  try {
+    const id = req.userid;
+    const getUser = await getUserByID(id)
+    console.log(getUser);
+    res.json({user:req.userid})
+  } catch (error) {
+    console.log(error);
+  }
+})
 // import hassedpasswordfunc
 const {hassedPassFunc} = require('../utils/BrcyptingPassword')
 
 // create new user coming to webPage;
-LoginRouter.get('/', async (req, res) => {
+LoginRouter.post('/', async (req, res) => {
     const { name, company, address, email, password } = req.body;
     let hasedPassword = await hassedPassFunc(password)
     console.log(hasedPassword)
@@ -78,6 +89,9 @@ LoginRouter.post('/login', async (req, res) => {
     // res.json({status:"success",message:"login successully"})
 
 })
+
+
+
 
 
 

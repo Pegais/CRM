@@ -23,7 +23,7 @@ const TicketRouter=require("./src/Router/TicketRouter")
 
 
 // use Routers
-app.use('/auth/user', UserRouter)
+app.use('/auth', UserRouter)
 app.use('/ticket', TicketRouter)
 
 // ******************************************************************

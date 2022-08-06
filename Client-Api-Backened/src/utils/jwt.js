@@ -22,9 +22,17 @@ const createRefreshJwt = async(payload,_id) => {
    }
 }
 
+const verifyJWT = givenToken => {
+    try {
+        return Promise.resolve(jwt.verify(givenToken,process.env.JWT_ACCESS_TOKEN))
+    } catch (error) {
+        return Promise.resolve(error)
+    }
+}
 
 module.exports = {
     createAccessJwt,
     createRefreshJwt,
+    verifyJWT
 }
 
