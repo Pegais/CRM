@@ -1,7 +1,7 @@
 const express = require("express");
 const LoginRouter = express.Router();
 const { createAccessJwt, createRefreshJwt}=require('../utils/jwt')
-
+const {getresetPin} =require("../user/resetPassword/restPassword.model")
 const {userAuthorization} =require("../middleware/authorization.middleware")
 // requiring the insert query from user/modal/user.modal
 const { insert, getUserByEmail,getUserByID } = require('../user/model/user.model')
@@ -90,7 +90,25 @@ LoginRouter.post('/login', async (req, res) => {
 
 })
 
-
+LoginRouter.post('/reset-password',async (req, res) => { 
+// here check email is valid or not
+    // check for given user for the given email
+    // create a numeric pin a6 digit unique;
+    // email it to user
+    try {
+        const { email } = req.body;
+        const user = await getUserByEmail(email)
+        if (user && user._id) {
+            // create a 6 digit unique numeric pin
+            const setPin = await getresetPin(email)
+         return  res.json({setPin})
+        }
+        res.status(403).json({status: 'error', message  : 'Invalid email address'})
+        
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 
 

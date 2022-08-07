@@ -30,3 +30,13 @@ Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjoicHJpeWFua2FAZ
 ### get the refresh tokens from the mongodb
 GET http://localhost:5000/token/fresh-access-jwt
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjoicHJpeWFua2FAZ21haWwuY29tIiwiaWF0IjoxNjU5ODU0MDkzLCJleHAiOjE2NjA0NTg4OTN9.N3TS6EVjz5hrJ52zifxYrRFDEXPkWTOH3C_3z1DNB08
+
+
+### resest-password endpoint
+POST http://localhost:5000/auth/reset-password
+Content-Type: application/json
+
+{
+    
+    "email":"priyanka@gmail.com"   
+}
