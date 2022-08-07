@@ -28,7 +28,7 @@ LoginRouter.get("/user",userAuthorization,async (req, res) => {
 const {hassedPassFunc} = require('../utils/BrcyptingPassword')
 
 // create new user coming to webPage;
-LoginRouter.post('/', async (req, res) => {
+LoginRouter.post('/newUser', async (req, res) => {
     const { name, company, address, email, password } = req.body;
     let hasedPassword = await hassedPassFunc(password)
     console.log(hasedPassword)
@@ -36,12 +36,12 @@ LoginRouter.post('/', async (req, res) => {
 
         const result = await insert({ name, company, address, email, password: hasedPassword })
         console.log(result);
-        res.json({
+       return res.json({
             message: 'user inserted', result
         })
     } catch (error) {
         console.log(error);
-        res.json({
+       return res.json({
             message: 'error in inserting data'
         })
 
@@ -90,6 +90,8 @@ LoginRouter.post('/login', async (req, res) => {
 
 })
 
+
+const emailProcessor =require("../utils/email.helper")
 LoginRouter.post('/reset-password',async (req, res) => { 
 // here check email is valid or not
     // check for given user for the given email
@@ -101,9 +103,11 @@ LoginRouter.post('/reset-password',async (req, res) => {
         if (user && user._id) {
             // create a 6 digit unique numeric pin
             const setPin = await getresetPin(email)
+            emailProcessor(email, setPin.pin)
+            
          return  res.json({setPin})
         }
-        res.status(403).json({status: 'error', message  : 'Invalid email address'})
+        res.status(403).json({status: 'error', message  : 'Invalid email address for reset pin'})
         
     } catch (error) {
         console.log(error);
