@@ -1,5 +1,5 @@
 const { verifyJWT } = require("../utils/jwt")
-const {getJwt} =require("../utils/redis.helper")
+const {getJwt,delJwt} =require("../utils/redis.helper")
 const userAuthorization =async (req, res, next) => {
    try {
     const {authorization} = req.headers
@@ -17,7 +17,8 @@ const userAuthorization =async (req, res, next) => {
         }
         req.userid = value;
         return next();
-    } 
+       } 
+       delJwt(authorization)
     return res.status(403).json({message:"Forbidden"})
     // checking if JWT is valid and exist in redisdb.
     // if there authorize else not authorize.

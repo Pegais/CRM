@@ -12,7 +12,7 @@ LoginRouter.all("/", (req, res, next) => {
     })
     next();
 })
-// Get user profile router with authorization access token
+// Get user profile router with authorization access token and also delete the expired accesstoken from redisdb
 LoginRouter.get("/user",userAuthorization,async (req, res) => {
     // suppose this data coming from client form
   try {

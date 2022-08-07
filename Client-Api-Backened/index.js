@@ -18,13 +18,16 @@ const Port = process.env.PORT || 5000
 
 // load Routers
 const UserRouter = require("./src/Router/UserRouter")
-const TicketRouter=require("./src/Router/TicketRouter")
+const TicketRouter = require("./src/Router/TicketRouter")
+const tokenRouter = require("./src/Router/tokenRouter")
+
 
 
 
 // use Routers
 app.use('/auth', UserRouter)
 app.use('/ticket', TicketRouter)
+app.use('/token', tokenRouter)
 
 // ******************************************************************
 // connecting the mongoose database;
