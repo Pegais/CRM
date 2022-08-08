@@ -3,6 +3,7 @@ const LoginRouter = express.Router();
 const { createAccessJwt, createRefreshJwt } = require('../utils/jwt')
 const { getresetPin } = require("../user/resetPassword/restPassword.model")
 const { userAuthorization } = require("../middleware/authorization.middleware")
+const{reqPasswordMiddleware,updatePasswordMiddleware} =require("../middleware/formValidator.middleware")
 // requiring the insert query from user/modal/user.modal
 const { insert, getUserByEmail, getUserByID , storeUpdatedPassword} = require('../user/model/user.model')
 
@@ -12,18 +13,7 @@ LoginRouter.all("/", (req, res, next) => {
     })
     next();
 })
-// Get user profile router with authorization access token and also delete the expired accesstoken from redisdb
-LoginRouter.get("/user", userAuthorization, async (req, res) => {
-    // suppose this data coming from client form
-    try {
-        const id = req.userid;
-        const getUser = await getUserByID(id)
-        console.log(getUser);
-        res.json({ user: req.userid })
-    } catch (error) {
-        console.log(error);
-    }
-})
+
 // import hassedpasswordfunc
 const { hassedPassFunc } = require('../utils/BrcyptingPassword')
 
@@ -90,9 +80,22 @@ LoginRouter.post('/login', async (req, res) => {
 
 })
 
+// Get user profile router with authorization access token and also delete the expired accesstoken from redisdb
+LoginRouter.get("/user", userAuthorization, async (req, res) => {
+    // suppose this data coming from client form
+    try {
+        const id = req.userid;
+        const getUser = await getUserByID(id)
+        console.log(getUser);
+        res.json({ user: req.userid })
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 
 const emailProcessor = require("../utils/email.helper")
-LoginRouter.post('/reset-password', async (req, res) => {
+LoginRouter.post('/reset-password',reqPasswordMiddleware, async (req, res) => {
     // here check email is valid or not
     // check for given user for the given email
     // create a numeric pin a6 digit unique;
@@ -116,7 +119,7 @@ LoginRouter.post('/reset-password', async (req, res) => {
 
 
 const { getPasswordData ,deletePinfromDatabase} = require("../user/resetPassword/restPassword.model")
-LoginRouter.patch("/update-password", async (req, res) => {
+LoginRouter.patch("/update-password",updatePasswordMiddleware, async (req, res) => {
     // receive email,pin and new password,
     // check if given email and pin are there in db;
     // check if given pin is expired or not
@@ -124,6 +127,7 @@ LoginRouter.patch("/update-password", async (req, res) => {
     // encrypt new password and
     // update password in db,
     // send email notification.
+    // delete the pin from database.
     try {
         let { email, pin, newPassword } = req.body;
         let result = await getPasswordData(email, pin)
