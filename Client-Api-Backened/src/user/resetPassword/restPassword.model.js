@@ -25,9 +25,60 @@ const getresetPin = async(email) => {
 
 // getting userEmail from Database;
 
+// checking the email and pin exists in the database
+const getPasswordData = (email,pin) => {
+    return new Promise((resolve, reject) => {
+        try {
+            if (!email || !pin) {
+                return false;
+            }
+            ResetPinSchema.findOne({ email,pin }, (error, data) => {
+                if (error) {
+                    reject(error)
+                }
+                else {
+                    resolve(data)
+                }
+            })
+
+        } catch (error) {
+            reject(error)
+            console.log(error)
+
+        }
 
 
+    })
+}
+
+
+const deletePinfromDatabase = (email,pin) => {
+    return new Promise((resolve, reject) => {
+        try {
+            if (!email || !pin) {
+                return false;
+            }
+            ResetPinSchema.findOneAndDelete({ email },{pin}, (error, data) => {
+                if (error) {
+                    reject(error)
+                }
+                else {
+                    resolve(data)
+                }
+            })
+
+        } catch (error) {
+
+            console.log(error)
+
+        }
+
+
+    })
+}
 module.exports = {
     getresetPin,
+    getPasswordData,
+    deletePinfromDatabase
   
 };

@@ -1,31 +1,31 @@
 const express = require("express");
 const LoginRouter = express.Router();
-const { createAccessJwt, createRefreshJwt}=require('../utils/jwt')
-const {getresetPin} =require("../user/resetPassword/restPassword.model")
-const {userAuthorization} =require("../middleware/authorization.middleware")
+const { createAccessJwt, createRefreshJwt } = require('../utils/jwt')
+const { getresetPin } = require("../user/resetPassword/restPassword.model")
+const { userAuthorization } = require("../middleware/authorization.middleware")
 // requiring the insert query from user/modal/user.modal
-const { insert, getUserByEmail,getUserByID } = require('../user/model/user.model')
+const { insert, getUserByEmail, getUserByID , storeUpdatedPassword} = require('../user/model/user.model')
 
 LoginRouter.all("/", (req, res, next) => {
     res.json({
-        message:"return user router"
+        message: "return user router"
     })
     next();
 })
 // Get user profile router with authorization access token and also delete the expired accesstoken from redisdb
-LoginRouter.get("/user",userAuthorization,async (req, res) => {
+LoginRouter.get("/user", userAuthorization, async (req, res) => {
     // suppose this data coming from client form
-  try {
-    const id = req.userid;
-    const getUser = await getUserByID(id)
-    console.log(getUser);
-    res.json({user:req.userid})
-  } catch (error) {
-    console.log(error);
-  }
+    try {
+        const id = req.userid;
+        const getUser = await getUserByID(id)
+        console.log(getUser);
+        res.json({ user: req.userid })
+    } catch (error) {
+        console.log(error);
+    }
 })
 // import hassedpasswordfunc
-const {hassedPassFunc} = require('../utils/BrcyptingPassword')
+const { hassedPassFunc } = require('../utils/BrcyptingPassword')
 
 // create new user coming to webPage;
 LoginRouter.post('/newUser', async (req, res) => {
@@ -36,12 +36,12 @@ LoginRouter.post('/newUser', async (req, res) => {
 
         const result = await insert({ name, company, address, email, password: hasedPassword })
         console.log(result);
-       return res.json({
+        return res.json({
             message: 'user inserted', result
         })
     } catch (error) {
         console.log(error);
-       return res.json({
+        return res.json({
             message: 'error in inserting data'
         })
 
@@ -51,9 +51,9 @@ LoginRouter.post('/newUser', async (req, res) => {
 
 // create  userLogin Route
 // check if user is there in DB through email and bcrypt compare
-const {ComparePassword} = require('../utils/BrcyptingPassword')
+const { ComparePassword } = require('../utils/BrcyptingPassword')
 LoginRouter.post('/login', async (req, res) => {
-    console.log(ComparePassword,"this is comparePassword function");
+    console.log(ComparePassword, "this is comparePassword function");
     try {
 
         const { email, password } = req.body
@@ -69,18 +69,18 @@ LoginRouter.post('/login', async (req, res) => {
         if (user && user.password) {
             const result = await ComparePassword(password, passwordFromDatabase)
             if (result) {
-                
+
                 // making two tokens with jwt 
-                const accessToken = await createAccessJwt(user.email,`${user._id}`);
-                
-                const refreshToken = await createRefreshJwt(user.email,`${user._id}`);
-                res.json({status:'success',message:'login succesfully',accessToken,refreshToken})
+                const accessToken = await createAccessJwt(user.email, `${user._id}`);
+
+                const refreshToken = await createRefreshJwt(user.email, `${user._id}`);
+                res.json({ status: 'success', message: 'login succesfully', accessToken, refreshToken })
             }
-            
+
             console.log(result);
         } else {
             console.log("User not Found or User password invalid");
-            res.json({status:'error',message:'User not Found or User password invalid'})
+            res.json({ status: 'error', message: 'User not Found or User password invalid' })
         }
 
     } catch (error) {
@@ -91,9 +91,9 @@ LoginRouter.post('/login', async (req, res) => {
 })
 
 
-const emailProcessor =require("../utils/email.helper")
-LoginRouter.post('/reset-password',async (req, res) => { 
-// here check email is valid or not
+const emailProcessor = require("../utils/email.helper")
+LoginRouter.post('/reset-password', async (req, res) => {
+    // here check email is valid or not
     // check for given user for the given email
     // create a numeric pin a6 digit unique;
     // email it to user
@@ -103,17 +103,68 @@ LoginRouter.post('/reset-password',async (req, res) => {
         if (user && user._id) {
             // create a 6 digit unique numeric pin
             const setPin = await getresetPin(email)
-            emailProcessor(email, setPin.pin)
-            
-         return  res.json({setPin})
+            emailProcessor(email, setPin.pin,'request-new-password')
+
+            return res.json({ setPin })
         }
-        res.status(403).json({status: 'error', message  : 'Invalid email address for reset pin'})
-        
+        res.status(403).json({ status: 'error', message: 'Invalid email address for reset pin' })
+
     } catch (error) {
         console.log(error);
     }
 })
 
+
+const { getPasswordData ,deletePinfromDatabase} = require("../user/resetPassword/restPassword.model")
+LoginRouter.patch("/update-password", async (req, res) => {
+    // receive email,pin and new password,
+    // check if given email and pin are there in db;
+    // check if given pin is expired or not
+    // in our case expiretime is 1 day.
+    // encrypt new password and
+    // update password in db,
+    // send email notification.
+    try {
+        let { email, pin, newPassword } = req.body;
+        let result = await getPasswordData(email, pin)
+        console.log(result);
+        if (result?._id) {
+            let dbtime = result.addedAt;
+            let expiresIn = 1;
+            let expiryDate = dbtime.setDate(dbtime.getDate() + expiresIn);
+            let today = new Date();
+            // checked if today is less than expiry data of pin
+            if (today > expiryDate) {
+                return res.json({message:"Your pin has expired"});
+                
+            }
+
+            let hassedPassword = await hassedPassFunc(newPassword)
+            let updatedUser = await storeUpdatedPassword(email, hassedPassword)
+            console.log(updatedUser)
+            if (updatedUser._id) {
+                // send email notification
+                emailProcessor(email, pin, "update-password-success")
+                // delete the pin from the database of pindatabase.
+                let deleteSucess = await deletePinfromDatabase(email, pin)
+                if (deleteSucess) {
+                    console.log("deleted pin successfully");
+                }
+                return res.json({message:"password updated successfully "});
+            }
+            
+
+            // console.log(dbtime);
+        } 
+            
+      res.status(403).send({ message: "cannot update password!! Please try again later" });
+        
+
+    } catch (error) {
+        console.log(error);
+    }
+
+})
 
 
 

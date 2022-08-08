@@ -31,13 +31,15 @@ Content-Type: application/json
 {
     
     "email":"diggidon29@gmail.com",
-     "password":"12345"
+     "password":"Pepcoding123"
    
     
 }
+
 ### authorization endpoint
 GET  http://localhost:5000/auth/user
 Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjoicHJpeWFua2FAZ21haWwuY29tIiwiaWF0IjoxNjU5ODU5ODg5LCJleHAiOjE2NTk4NTk5NDl9.CiVom27gaqXorERsh3JqpIUIMy4IJOMU7S7PW1uU5Rk
+
 
 ### get the refresh tokens from the mongodb
 GET http://localhost:5000/token/fresh-access-jwt
@@ -52,3 +54,14 @@ Content-Type: application/json
     
     "email":"diggidon29@gmail.com"   
 }
+
+### update-password endpoint
+PATCH http://localhost:5000/auth/update-password
+Content-Type: application/json
+
+{
+    "email":"diggidon29@gmail.com" ,
+    "pin":"516547",
+    "newPassword":"Pepcoding123"
+}
+
