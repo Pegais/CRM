@@ -12,9 +12,10 @@ Routers Used----LoginRouter  and TicketRouter
           |Routers               |reuqet-type   |isPrivate  |description
     1.     | './auth/login'  |    POST       |     NO   |       verify user authentication and return JWT
     2.     | './auth/user/request-reset-password '|Post  | NO | verify email and pin to reset the passsword
-    3.     |  './auth/user/reset-password'  | PUT |NO | replace with new password
+    3.     |  './auth/user/reset-password'  | Post |NO | replace with new password
     4.     | './auth/user/   | GET  | YES  |  get user info
-
+   5. | './auth/user/update-password' | Patch | NO | update password \
+   6. | './auth/user/logout' | Delete | yes | logout fromentries
 
 
 

@@ -61,7 +61,7 @@ const getUserByID = (_id) => {
 }
 
 const storeRefreshJWT = (_id, token) => {
-    console.log(_id,typeof id);
+    // console.log(_id,typeof id);
     return new Promise((resolve, reject) => {
         try {
             UserSchema.findByIdAndUpdate(

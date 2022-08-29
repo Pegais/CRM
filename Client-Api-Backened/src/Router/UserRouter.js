@@ -5,8 +5,8 @@ const { getresetPin } = require("../user/resetPassword/restPassword.model")
 const { userAuthorization } = require("../middleware/authorization.middleware")
 const{reqPasswordMiddleware,updatePasswordMiddleware} =require("../middleware/formValidator.middleware")
 // requiring the insert query from user/modal/user.modal
-const { insert, getUserByEmail, getUserByID , storeUpdatedPassword} = require('../user/model/user.model')
-
+const { insert, getUserByEmail, getUserByID , storeUpdatedPassword ,storeRefreshJWT} = require('../user/model/user.model')
+const {delJwt} =require("../utils/redis.helper")
 LoginRouter.all("/", (req, res, next) => {
     res.json({
         message: "return user router"
@@ -169,6 +169,30 @@ LoginRouter.patch("/update-password",updatePasswordMiddleware, async (req, res) 
     }
 
 })
+
+// logout from sytem if user is logged in , checking through userAuthorization middleware.
+LoginRouter.delete("/logout", userAuthorization, async (req, res) => {
+    // get authorization header ;
+    // check if auth token exists in redis db;
+    // if exists, delete the access token from redis db;
+//    update the refresh token in redis db;
+    try {
+        const id = req.userid;
+        const { authorization } = req.headers;
+
+        // deleting the access token from redis db;
+        delJwt(authorization);
+        // update the refresh token in mongodb by doing it empty;
+      let result = await storeRefreshJWT(id,"")
+        if (result._id) {
+    return res.json({status:"success", message:"logged out successfully"})
+        }
+        res.json({ status: "error", message: "failed during loging out" })
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 
 
 

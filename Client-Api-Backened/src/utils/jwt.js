@@ -5,7 +5,7 @@ const {storeRefreshJWT} =require("../user/model/user.model")
 const createAccessJwt = async (payload, id) => {
     console.log(payload,id,"from createAccessJwt.js");
     try {
-        var accessToken =  jwt.sign({ payload }, process.env.JWT_ACCESS_TOKEN, { expiresIn: '1m' });
+        var accessToken =  jwt.sign({ payload }, process.env.JWT_ACCESS_TOKEN, { expiresIn: '10m' });
          setJwt(accessToken,`${id}`)
         return Promise.resolve(accessToken)
     } catch (error) {

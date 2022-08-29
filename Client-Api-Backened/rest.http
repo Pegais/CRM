@@ -38,12 +38,12 @@ Content-Type: application/json
 
 ### authorization endpoint
 GET  http://localhost:5000/auth/user
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjoicHJpeWFua2FAZ21haWwuY29tIiwiaWF0IjoxNjU5ODU5ODg5LCJleHAiOjE2NTk4NTk5NDl9.CiVom27gaqXorERsh3JqpIUIMy4IJOMU7S7PW1uU5Rk
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjoiZGlnZ2lkb24yOUBnbWFpbC5jb20iLCJpYXQiOjE2NjE3NjUyNDIsImV4cCI6MTY2MTc2NTg0Mn0.gA3afBYmD40kgoifZoJkE-jR-9TMn26vgVcOeFJ_WqI
 
 
 ### get the refresh tokens from the mongodb
 GET http://localhost:5000/token/fresh-access-jwt
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjoicHJpeWFua2FAZ21haWwuY29tIiwiaWF0IjoxNjU5ODU0MDkzLCJleHAiOjE2NjA0NTg4OTN9.N3TS6EVjz5hrJ52zifxYrRFDEXPkWTOH3C_3z1DNB08
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjoiZGlnZ2lkb24yOUBnbWFpbC5jb20iLCJpYXQiOjE2NjE3NjUyNDIsImV4cCI6MTY2MTc2NTg0Mn0.gA3afBYmD40kgoifZoJkE-jR-9TMn26vgVcOeFJ_WqI
 
 
 ### resest-password endpoint
@@ -64,4 +64,9 @@ Content-Type: application/json
     "pin":"202780",
     "newPassword":"Pepcoding123"
 }
+
+### logout endpoint
+DELETE http://localhost:5000/auth/logout
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjoiZGlnZ2lkb24yOUBnbWFpbC5jb20iLCJpYXQiOjE2NjE3NjY2MTYsImV4cCI6MTY2MTc2NzIxNn0.YyZAv4ZswWZRCn5E0y_pctu-p4kMc3Ej8QgFeKWTAjQ
+
 
